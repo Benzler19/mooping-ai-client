@@ -3,7 +3,6 @@ import { createContext } from "react"
 const authContext = createContext({
   authcertifying: true,
   authenticated: false,
-  // permissions: [],
   user: {},
   _handleLogin: () => { },
   _handleLogout: () => { },

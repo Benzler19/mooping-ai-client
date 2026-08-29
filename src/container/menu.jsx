@@ -1,21 +1,14 @@
-const accessMenu = ({ PERMISSIONS }) => {
-  const menuItems = []
-
-  const _check = (name) => {
-    if (!Array.isArray(PERMISSIONS)) return false
-    return PERMISSIONS.some((p) => p.menu_name_en === name && p.permission_view === 1)
-  }
-
-  if (_check("home")) {
-    menuItems.push({ name: "หน้าหลัก",    icon: "pi pi-home",         to: "/"           })
-
-    if (_check("route"))     menuItems.push({ name: "สาย",             icon: "pi pi-map",          to: "/route"      })
-    if (_check("borrower"))  menuItems.push({ name: "ผู้กู้เงิน",     icon: "pi pi-users",        to: "/borrower"   })
-    if (_check("trip"))      menuItems.push({ name: "การเก็บเงิน",    icon: "pi pi-wallet",       to: "/trip"       })
-    if (_check("verify"))    menuItems.push({ name: "ตรวจสอบ",        icon: "pi pi-check-circle", to: "/verify"     })
-    if (_check("permission"))menuItems.push({ name: "สิทธิ์การใช้งาน",icon: "pi pi-key",          to: "/permission" })
-    if (_check("user"))      menuItems.push({ name: "ผู้ใช้งาน",      icon: "pi pi-user",         to: "/user"       })
-  }
+const accessMenu = () => {
+  const menuItems = [
+    { name: "หน้าหลัก",       icon: "pi pi-home",        to: "/"          },
+    { name: "ขายสินค้า",      icon: "pi pi-shopping-cart", to: "/sale"    },
+    { name: "เมนูสินค้า",     icon: "pi pi-list",        to: "/product"   },
+    { name: "วัตถุดิบ/สต็อก", icon: "pi pi-box",         to: "/ingredient" },
+    { name: "รับซื้อวัตถุดิบ", icon: "pi pi-truck",      to: "/purchase"  },
+    { name: "ค่าใช้จ่าย",     icon: "pi pi-wallet",      to: "/expense"   },
+    { name: "รายงานสรุปผล",   icon: "pi pi-chart-line",  to: "/report"    },
+    { name: "ผู้ใช้งาน",      icon: "pi pi-user",        to: "/user"      },
+  ]
 
   return { menuItems }
 }

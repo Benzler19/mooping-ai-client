@@ -8,23 +8,21 @@ function Layout() {
 
   return (
     <AuthConsumer>
-      {({ authenticated, user, permissions, _handleLogout }) =>
+      {({ authenticated, user, _handleLogout }) =>
         authenticated ? (
           <div className="min-h-screen" style={{ background: "var(--surface)" }}>
             <Sidebar
-              PERMISSIONS={permissions}
               mobileOpen={mobileOpen}
               handleSidebarToggle={() => setMobileOpen(v => !v)}
             />
             <Header handleSidebarToggle={() => setMobileOpen(v => !v)} />
             <main
-              className="transition-all duration-300"
+              className="app-main transition-all duration-300"
               style={{
-                marginLeft: "var(--sidebar-w)",
                 paddingTop: "var(--header-h)",
                 minHeight: "100vh",
               }}>
-              <Content USER={user} PERMISSIONS={permissions} handleLogout={_handleLogout} />
+              <Content USER={user} handleLogout={_handleLogout} />
             </main>
           </div>
         ) : (

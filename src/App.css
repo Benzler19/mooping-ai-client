@@ -7,18 +7,18 @@
 :root {
   --sidebar-w: 240px;
   --header-h:  56px;
-  --primary:   #1e293b;
-  --primary-2: #334155;
-  --accent:    #3b82f6;
-  --success:   #10b981;
+  --primary:   #292524;
+  --primary-2: #44403c;
+  --accent:    #ea580c;
+  --success:   #16a34a;
   --warning:   #f59e0b;
-  --danger:    #ef4444;
-  --surface:   #f1f5f9;
+  --danger:    #dc2626;
+  --surface:   #fafaf7;
   --card:      #ffffff;
-  --border:    #e2e8f0;
-  --text-1:    #0f172a;
-  --text-2:    #475569;
-  --text-3:    #94a3b8;
+  --border:    #e7e2da;
+  --text-1:    #1c1917;
+  --text-2:    #57534e;
+  --text-3:    #a8a29e;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -58,14 +58,14 @@ body { background: var(--surface); }
   gap: 6px !important;
 }
 
-/* Primary — blue */
+/* Primary — orange (ไฟย่าง) */
 .btn-primary {
   background: var(--accent) !important;
   border-color: var(--accent) !important;
   color: #fff !important;
-  box-shadow: 0 1px 4px rgba(59,130,246,.25) !important;
+  box-shadow: 0 1px 4px rgba(234,88,12,.25) !important;
 }
-.btn-primary:hover { background:#2563eb!important; border-color:#2563eb!important; box-shadow:0 4px 12px rgba(59,130,246,.35)!important; }
+.btn-primary:hover { background:#c2410c!important; border-color:#c2410c!important; box-shadow:0 4px 12px rgba(234,88,12,.35)!important; }
 
 /* Dark */
 .btn-dark {
@@ -78,16 +78,16 @@ body { background: var(--surface); }
 /* Accent */
 .btn-accent { background:var(--accent)!important; border-color:var(--accent)!important; color:#fff!important; }
 
-/* Edit icon button — soft blue */
+/* Edit icon button — soft orange */
 .btn-edit {
-  background: #eff6ff !important;
+  background: #fff7ed !important;
   border: none !important;
-  color: #2563eb !important;
+  color: #c2410c !important;
   border-radius: 8px !important;
   width: 32px !important; height: 32px !important;
   padding: 0 !important;
 }
-.btn-edit:hover { background:#dbeafe!important; }
+.btn-edit:hover { background:#ffedd5!important; }
 
 /* Delete icon button — soft red */
 .btn-delete {
@@ -134,7 +134,7 @@ body { background: var(--surface); }
 .p-datatable .p-datatable-tbody > tr:last-child > td { border-bottom:none!important; }
 
 .p-inputtext, .p-dropdown { border-radius:10px!important; border:1.5px solid var(--border)!important; font-size:14px!important; }
-.p-inputtext:focus, .p-dropdown:not(.p-disabled).p-focus { border-color:var(--accent)!important; box-shadow:0 0 0 3px rgba(59,130,246,.12)!important; }
+.p-inputtext:focus, .p-dropdown:not(.p-disabled).p-focus { border-color:var(--accent)!important; box-shadow:0 0 0 3px rgba(234,88,12,.12)!important; }
 
 .p-dialog { border-radius:16px!important; }
 .p-dialog .p-dialog-header { border-radius:16px 16px 0 0!important; border-bottom:1px solid var(--border)!important; padding:16px 20px!important; }
@@ -147,6 +147,17 @@ body { background: var(--surface); }
 @keyframes shimmer { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
 .skeleton { border-radius:8px; background:linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 50%,#e2e8f0 75%); background-size:400px 100%; animation:shimmer 1.4s infinite linear; }
 
+/* ── Responsive shell: off-canvas sidebar on phone/tablet, fixed on desktop ── */
+.app-header { left: 0; }
+.app-main   { margin-left: 0; }
+@media (min-width: 1280px) {
+  .app-header { left: var(--sidebar-w); }
+  .app-main   { margin-left: var(--sidebar-w); }
+}
+
 .sidebar-item { transition: background .15s, color .15s; }
-.sidebar-item.active { background:rgba(59,130,246,.15); color:var(--accent)!important; }
-.sidebar-item.active i { color:var(--accent)!important; }
+.sidebar-item.active { background:rgba(234,88,12,.18); color:#fb923c!important; }
+.sidebar-item.active i { color:#fb923c!important; }
+
+.badge-low-stock { background:#fef2f2; color:#b91c1c; }
+.badge-ok        { background:#f0fdf4; color:#15803d; }

@@ -13,7 +13,7 @@ const Login = () => {
           <motion.form
             key="login-form"
             onSubmit={(e) => { e.preventDefault(); _handleLogin(state) }}
-            className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
+            className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -26,19 +26,20 @@ const Login = () => {
               transition={{ duration: 0.6, ease: "easeOut" }}
             >
               {/* Header */}
-              <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-8 py-8 text-center">
+              <div className="bg-gradient-to-r from-stone-800 to-stone-700 px-8 py-8 text-center">
                 <motion.div
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  <div className="text-4xl font-black text-white tracking-tight">
-                    G-Cash
+                  <div className="text-4xl mb-1">🍢</div>
+                  <div className="text-3xl font-black text-white tracking-tight">
+                    หมูปิ้ง
                   </div>
-                  <div className="text-lg font-medium text-slate-300 tracking-widest mt-1">
-                    FLOW
+                  <div className="text-sm font-medium text-orange-300 tracking-widest mt-1">
+                    ระบบจัดการร้าน
                   </div>
-                  <div className="mt-2 h-0.5 w-12 bg-blue-400 mx-auto rounded-full" />
+                  <div className="mt-2 h-0.5 w-12 bg-orange-400 mx-auto rounded-full" />
                 </motion.div>
               </div>
 
@@ -81,7 +82,7 @@ const Login = () => {
                   label="เข้าสู่ระบบ"
                   type="submit"
                   className="mt-2 rounded-xl w-full h-10 border-none font-semibold text-white"
-                  style={{ background: "linear-gradient(135deg, #1e293b, #334155)" }}
+                  style={{ background: "linear-gradient(135deg, #ea580c, #c2410c)" }}
                 />
               </motion.div>
             </motion.div>

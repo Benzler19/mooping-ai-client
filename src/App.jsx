@@ -3,11 +3,12 @@ import "./App.css"
 import "./style"
 import { HashRouter, Route, Switch } from "react-router-dom"
 import Auth from "./components/auth/Auth"
+import ThaiCalendar from "./components/customComponent/thai-calendar"
 const Layout = React.lazy(() => import("./container/layout"))
 
-function App() {
-  const [count, setCount] = useState(0)
+ThaiCalendar()
 
+function App() {
   return (
     <Auth>
       <HashRouter>

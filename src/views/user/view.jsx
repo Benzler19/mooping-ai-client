@@ -1,85 +1,80 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { useHistory } from "react-router-dom"
 import { DataTable } from "primereact/datatable"
 import { Column } from "primereact/column"
 import { Button } from "primereact/button"
 import { InputText } from "primereact/inputtext"
+import { Tag } from "primereact/tag"
+import { Toast } from "primereact/toast"
 import { motion } from "framer-motion"
 import Swal from "sweetalert2"
 import { UserModel } from "../../models"
-import PageHeader from "../../components/customComponent/PageHeader"
+import { PageHeader, EmptyState } from "../../components/customComponent"
 
-const uModel = new UserModel()
+const model = new UserModel()
 
-export default function UserView({ SESSION }) {
+export default function UserView() {
   const history = useHistory()
-  const [rows, setRows]       = useState([])
-  const [loading, setLoading] = useState(false)
-  const [search, setSearch]   = useState("")
+  const toast = useRef(null)
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState("")
 
   const load = async () => {
     setLoading(true)
-    const res = await uModel.getUserBy({ params: {} })
-    setRows(res.data || [])
+    const res = await model.getUserBy({ params: {} })
+    setData(res.data || [])
     setLoading(false)
   }
   useEffect(() => { load() }, [])
 
-  const remove = (row) =>
+  const remove = (row) => {
     Swal.fire({
-      title: `ลบ ${row.firstname} ${row.lastname || ""}?`,
-      text: "ไม่สามารถกู้คืนได้",
-      icon: "warning", showCancelButton: true,
-      confirmButtonText: "ลบ", cancelButtonText: "ยกเลิก",
-      confirmButtonColor: "#ef4444",
-    }).then(async ({ isConfirmed }) => {
-      if (!isConfirmed) return
-      const res = await uModel.deleteUserById({ user_table_uuid: row.user_table_uuid })
-      if (res.require) {
-        Swal.fire({ icon: "success", title: "ลบสำเร็จ", timer: 1500, showConfirmButton: false })
-        load()
-      }
+      title: `ลบผู้ใช้ "${row.username}"?`, icon: "warning", showCancelButton: true,
+      confirmButtonText: "ลบ", cancelButtonText: "ยกเลิก", confirmButtonColor: "#dc2626",
+    }).then(async (r) => {
+      if (!r.isConfirmed) return
+      const res = await model.deleteUserById({ user_id: row.user_id })
+      if (res.require) { toast.current.show({ severity: "success", summary: "ลบสำเร็จ" }); load() }
+      else toast.current.show({ severity: "error", summary: "ลบไม่สำเร็จ" })
     })
+  }
+
+  const filtered = data.filter(d => (d.username || "").toLowerCase().includes(search.toLowerCase()) || (d.full_name || "").toLowerCase().includes(search.toLowerCase()))
 
   return (
     <div className="p-4 md:p-6 max-w-screen-xl mx-auto">
-      <PageHeader title="ผู้ใช้งาน" subtitle="จัดการ User และกำหนดสาย"
-        actions={
-          <Button label="เพิ่มผู้ใช้งาน" icon="pi pi-plus" className="btn-primary h-9"
-            onClick={() => history.push("/user/insert")} />
-        } />
+      <Toast ref={toast} />
+      <PageHeader
+        title="ผู้ใช้งาน"
+        subtitle={`ทั้งหมด ${data.length} คน`}
+        actions={<Button label="เพิ่มผู้ใช้งาน" icon="pi pi-plus" className="btn-primary" onClick={() => history.push("/user/insert")} />}
+      />
 
-      <motion.div className="card" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="p-4 border-b" style={{ borderColor: "var(--border)" }}>
-          <div className="relative w-full sm:w-72">
-            <i className="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none" />
-            <InputText value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="ค้นหาชื่อ, username..." className="w-full" />
-          </div>
-        </div>
+      <div className="card p-4 mb-4">
+        <span className="relative w-full md:w-80 block">
+          <i className="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-sm" />
+          <InputText value={search} onChange={e => setSearch(e.target.value)} placeholder="ค้นหาผู้ใช้งาน..." className="w-full pl-9" />
+        </span>
+      </div>
 
-        <DataTable value={rows} loading={loading} size="small" paginator rows={15}
-          globalFilter={search} emptyMessage="ไม่มีข้อมูลผู้ใช้งาน">
-          <Column header="#"         body={(_, o) => o.rowIndex + 1} style={{ width: 60 }} />
-          <Column field="username"   header="Username" sortable />
-          <Column field="firstname"  header="ชื่อ"    sortable />
-          <Column field="lastname"   header="สกุล"   sortable />
-          <Column field="role_name"  header="สิทธิ์"  sortable />
-          <Column header="สาย" body={r => r.route_code
-            ? <span className="font-medium">{r.route_code} – {r.route_name}</span>
-            : <span className="text-slate-400 text-xs">ทุกสาย</span>} />
-          <Column header="สถานะ" body={r => (
-            <span className={`badge ${r.is_active ? "badge-verified" : "badge-danger"}`}>
-              {r.is_active ? "ใช้งาน" : "ปิด"}
-            </span>)} />
-          <Column header="จัดการ" style={{ width: 110 }} body={row => (
-            <div className="flex gap-2">
-              <Button size="small" icon="pi pi-pencil" className="btn-edit"
-                onClick={() => history.push(`/user/update/${row.user_table_uuid}`)} />
-              <Button size="small" icon="pi pi-trash" className="btn-delete"
-                onClick={() => remove(row)} />
-            </div>)} />
+      <motion.div className="card overflow-hidden" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="overflow-x-auto">
+          <DataTable value={filtered} loading={loading} stripedRows
+          emptyMessage={<EmptyState title="ยังไม่มีผู้ใช้งาน" />}
+          paginator rows={10} rowsPerPageOptions={[10, 25, 50]}>
+          <Column field="username" header="Username" sortable />
+          <Column field="full_name" header="ชื่อ-นามสกุล" sortable />
+          <Column header="สถานะ" style={{ width: 110 }}
+            body={r => <Tag value={r.status ? "ใช้งาน" : "ปิด"} severity={r.status ? "success" : "danger"} />} />
+          <Column header="" style={{ width: 110 }} body={r => (
+            <div className="flex gap-1.5 justify-end">
+              <Button icon="pi pi-pencil" className="btn-edit" onClick={() => history.push(`/user/update/${r.user_id}`)} />
+              <Button icon="pi pi-trash" className="btn-delete" onClick={() => remove(r)} />
+            </div>
+          )} />
         </DataTable>
+        </div>
       </motion.div>
     </div>
   )

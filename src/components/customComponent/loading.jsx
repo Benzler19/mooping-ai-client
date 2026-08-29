@@ -10,8 +10,9 @@ const Loading = () => (
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}>
-      <div className="text-5xl font-black text-white tracking-tighter">G-Cash</div>
-      <div className="text-base font-medium text-blue-400 tracking-[0.4em] uppercase">Flow</div>
+      <div className="text-5xl mb-1">🍢</div>
+      <div className="text-4xl font-black text-white tracking-tighter">หมูปิ้ง</div>
+      <div className="text-base font-medium text-orange-400 tracking-[0.4em] uppercase">Shop</div>
     </motion.div>
 
     {/* Bar loader */}
@@ -19,7 +20,7 @@ const Loading = () => (
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 0.3 }}>
-      <motion.div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-300"
+      <motion.div className="h-full rounded-full bg-gradient-to-r from-orange-500 to-orange-300"
         initial={{ width: "0%" }}
         animate={{ width: "100%" }}
         transition={{ duration: 1.5, ease: "easeInOut" }} />

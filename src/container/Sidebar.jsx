@@ -3,8 +3,8 @@ import { Link, useHistory, useLocation } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import accessMenu from "./menu"
 
-function Sidebar({ PERMISSIONS, mobileOpen, handleSidebarToggle }) {
-  const { menuItems } = accessMenu({ PERMISSIONS })
+function Sidebar({ mobileOpen, handleSidebarToggle }) {
+  const { menuItems } = accessMenu()
   const history = useHistory()
   const location = useLocation()
 
@@ -24,22 +24,23 @@ function Sidebar({ PERMISSIONS, mobileOpen, handleSidebarToggle }) {
         )}
       </AnimatePresence>
 
-      {/* Sidebar */}
-      <motion.aside
-        className="fixed top-0 left-0 h-screen z-[10] flex flex-col"
+      {/* Sidebar — off-canvas drawer on phone/tablet, always visible from xl (desktop) up */}
+      <aside
+        className={`fixed top-0 left-0 h-screen z-[10] flex flex-col transition-transform duration-300 ease-out xl:translate-x-0 ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
         style={{ width: "var(--sidebar-w)", background: "var(--primary)" }}
-        initial={false}
-        animate={{ x: mobileOpen ? 0 : undefined }}
-        variants={{ hidden: { x: "-100%" }, visible: { x: 0 } }}
       >
         {/* Logo */}
         <Link to="/" className="flex flex-col items-center justify-center py-6 border-b border-white/10 shrink-0">
           <motion.div
             initial={{ opacity: 0, scale: .8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: .5 }}>
-            <div className="text-3xl font-black text-white tracking-tighter">G-Cash</div>
-            <div className="text-xs font-semibold text-blue-400 tracking-[.35em] text-center mt-0.5">FLOW</div>
+            transition={{ duration: .5 }}
+            className="flex flex-col items-center">
+            <div className="text-3xl">🍢</div>
+            <div className="text-2xl font-black text-white tracking-tighter -mt-1">หมูปิ้ง</div>
+            <div className="text-xs font-semibold text-orange-400 tracking-[.35em] text-center mt-0.5">SHOP</div>
           </motion.div>
         </Link>
 
@@ -60,7 +61,7 @@ function Sidebar({ PERMISSIONS, mobileOpen, handleSidebarToggle }) {
               <span className="text-sm font-medium">{item.name}</span>
               {isActive(item.to) && (
                 <motion.div layoutId="pill"
-                  className="ml-auto w-1.5 h-4 rounded-full bg-blue-400"
+                  className="ml-auto w-1.5 h-4 rounded-full bg-orange-400"
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
               )}
             </motion.div>
@@ -76,7 +77,7 @@ function Sidebar({ PERMISSIONS, mobileOpen, handleSidebarToggle }) {
             <span className="text-sm font-medium">ออกจากระบบ</span>
           </button>
         </div>
-      </motion.aside>
+      </aside>
     </>
   )
 }

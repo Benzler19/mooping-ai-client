@@ -1,148 +1,104 @@
 import React, { useState, useEffect } from "react"
-import { useHistory, useParams } from "react-router-dom"
+import { useHistory } from "react-router-dom"
 import { InputText } from "primereact/inputtext"
 import { Dropdown } from "primereact/dropdown"
 import { Button } from "primereact/button"
 import { motion } from "framer-motion"
 import Swal from "sweetalert2"
-import { UserModel, RoleModel, RouteModel } from "../../models"
-import PageHeader from "../../components/customComponent/PageHeader"
+import { UserModel } from "../../models"
+import { Enum } from "../../components/customComponent"
 
-const uModel  = new UserModel()
-const rModel  = new RoleModel()
-const rtModel = new RouteModel()
+const model = new UserModel()
+const EMPTY = { username: "", password: "", full_name: "", status: 1 }
 
-const EMPTY = {
-  user_table_uuid: null,
-  username: "", password: "",
-  firstname: "", lastname: "",
-  role_id: null, route_id: null, is_active: 1,
-}
-
-const isActiveOptions = [
-  { label: "ใช้งาน",    value: 1 },
-  { label: "ไม่ใช้งาน", value: 0 },
-]
+const Field = ({ label, required, children }) => (
+  <div className="flex flex-col gap-1.5">
+    <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+      {label}{required && <span className="text-red-400 ml-0.5">*</span>}
+    </label>
+    {children}
+  </div>
+)
 
 export default function UserUpsert({ SESSION, match }) {
-  const history   = useHistory()
-  const { uuid }  = match?.params || {}
-  const isEdit    = !!uuid
+  const history = useHistory()
+  const id = match?.params?.id
+  const isEdit = !!id
 
-  const [form, setForm]     = useState(EMPTY)
-  const [roles, setRoles]   = useState([])
-  const [routes, setRoutes] = useState([])
+  const [form, setForm] = useState(EMPTY)
   const [loading, setLoading] = useState(false)
-  const [saving, setSaving]   = useState(false)
-
+  const [saving, setSaving] = useState(false)
   const f = (k, v) => setForm(p => ({ ...p, [k]: v }))
 
   useEffect(() => {
     const init = async () => {
+      if (!isEdit) return
       setLoading(true)
-      const [r, rt] = await Promise.all([
-        rModel.getRoleBy({ params: {} }),
-        rtModel.getRouteBy({ params: {} }),
-      ])
-      setRoles((r.data || []).map(x => ({ label: x.role_name, value: x.role_id })))
-      setRoutes([
-        { label: "ทุกสาย (Admin)", value: null },
-        ...(rt.data || []).map(x => ({ label: `${x.route_code} – ${x.route_name}`, value: x.route_id })),
-      ])
-
-      if (isEdit) {
-        const res = await uModel.getUserById({ user_table_uuid: uuid })
-        if (res.require && res.data[0]) setForm({ ...res.data[0], password: "" })
-      }
+      const res = await model.getUserById({ user_id: id })
+      if (res.require && res.data[0]) setForm({ ...res.data[0], password: "" })
       setLoading(false)
     }
     init()
-  }, [uuid])
+  }, [id])
 
   const save = async () => {
-    if (!form.username || !form.firstname || !form.role_id)
-      return Swal.fire("กรุณากรอกข้อมูลให้ครบ", "Username, ชื่อ และสิทธิ์จำเป็นต้องระบุ", "warning")
-    if (!isEdit && !form.password)
-      return Swal.fire("กรุณากรอกรหัสผ่าน", "", "warning")
+    if (!form.username || !form.full_name) return Swal.fire("กรุณากรอกข้อมูลให้ครบ", "ต้องระบุ Username และชื่อ-นามสกุล", "warning")
+    if (!isEdit && !form.password) return Swal.fire("กรุณากรอกรหัสผ่าน", "", "warning")
 
     setSaving(true)
     const payload = { ...form, create_by: SESSION?.USER?.username, update_by: SESSION?.USER?.username }
-    const res = isEdit
-      ? await uModel.updateUserById(payload)
-      : await uModel.insertUser(payload)
+    const res = isEdit ? await model.updateUserById({ ...payload, user_id: id }) : await model.insertUser(payload)
     setSaving(false)
-
     if (res.require) {
-      await Swal.fire({ icon: "success", title: "บันทึกสำเร็จ", timer: 1500, showConfirmButton: false })
+      await Swal.fire({ icon: "success", title: "บันทึกสำเร็จ", timer: 1200, showConfirmButton: false })
       history.push("/user")
     } else {
-      Swal.fire({ icon: "error", title: "เกิดข้อผิดพลาด", text: "กรุณาลองใหม่" })
+      Swal.fire({ icon: "error", title: "เกิดข้อผิดพลาด" })
     }
   }
 
-  const fields = [
-    {
-      label: "ชื่อ *", col: 1,
-      node: <InputText value={form.firstname} onChange={e => f("firstname", e.target.value)} placeholder="ชื่อจริง" className="w-full" />,
-    },
-    {
-      label: "สกุล", col: 1,
-      node: <InputText value={form.lastname} onChange={e => f("lastname", e.target.value)} placeholder="นามสกุล" className="w-full" />,
-    },
-    {
-      label: "Username *", col: 1,
-      node: <InputText value={form.username} onChange={e => f("username", e.target.value)} placeholder="username" className="w-full" disabled={isEdit} />,
-    },
-    {
-      label: isEdit ? "รหัสผ่านใหม่ (เว้นว่าง = ไม่เปลี่ยน)" : "รหัสผ่าน *", col: 1,
-      node: <InputText type="password" value={form.password} onChange={e => f("password", e.target.value)} placeholder="••••••••" className="w-full" />,
-    },
-    {
-      label: "สิทธิ์ *", col: 1,
-      node: <Dropdown value={form.role_id} options={roles} onChange={e => f("role_id", e.value)} placeholder="เลือกสิทธิ์" className="w-full" />,
-    },
-    {
-      label: "สาย (Collector)", col: 1,
-      node: <Dropdown value={form.route_id} options={routes} onChange={e => f("route_id", e.value)} placeholder="เลือกสาย" className="w-full" />,
-    },
-    {
-      label: "สถานะ", col: 1,
-      node: <Dropdown value={form.is_active} options={isActiveOptions} onChange={e => f("is_active", e.value)} className="w-full" />,
-    },
-  ]
-
   return (
     <div className="p-4 md:p-6 max-w-screen-sm mx-auto">
-      <PageHeader
-        title={isEdit ? "แก้ไขผู้ใช้งาน" : "เพิ่มผู้ใช้งานใหม่"}
-        subtitle={isEdit ? `แก้ไขข้อมูล ${form.firstname || ""}` : "กรอกข้อมูลผู้ใช้งาน"}
-      />
-
-      <motion.div className="card p-6" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-        {loading ? (
-          <div className="space-y-3">
-            {[...Array(4)].map((_, i) => <div key={i} className="skeleton h-10 w-full" />)}
-          </div>
-        ) : (
-          <div className="flex flex-col gap-5">
-            {fields.map(({ label, node }) => (
-              <div key={label} className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-slate-600">{label}</label>
-                {node}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Actions */}
-        <div className="flex justify-end gap-3 mt-8 pt-5 border-t" style={{ borderColor: "var(--border)" }}>
-          <Button label="ยกเลิก" className="btn-cancel" icon="pi pi-times"
-            onClick={() => history.push("/user")} />
-          <Button label={isEdit ? "บันทึกการแก้ไข" : "เพิ่มผู้ใช้งาน"}
-            className="btn-primary" icon="pi pi-check"
-            loading={saving} onClick={save} />
+      <motion.div className="mb-6 flex items-center gap-3" initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}>
+        <button onClick={() => history.push("/user")}
+          className="w-8 h-8 rounded-full bg-white border flex items-center justify-center hover:bg-slate-50"
+          style={{ borderColor: "var(--border)" }}>
+          <i className="pi pi-arrow-left text-xs text-slate-500" />
+        </button>
+        <div>
+          <h1 className="text-xl font-black text-slate-900">{isEdit ? "แก้ไขผู้ใช้งาน" : "เพิ่มผู้ใช้งานใหม่"}</h1>
+          <p className="text-xs text-slate-400 mt-0.5">{isEdit ? form.full_name : "กรอกข้อมูลผู้ใช้งานที่จะเข้าระบบ"}</p>
         </div>
       </motion.div>
+
+      {loading ? (
+        <div className="card p-6 space-y-4">{[...Array(4)].map((_, i) => <div key={i} className="skeleton h-10 w-full" />)}</div>
+      ) : (
+        <motion.div className="card p-5 space-y-4" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+          <Field label="ชื่อ-นามสกุล" required>
+            <InputText value={form.full_name} onChange={e => f("full_name", e.target.value)} className="w-full" />
+          </Field>
+
+          <Field label="Username" required>
+            <InputText value={form.username} onChange={e => f("username", e.target.value)} disabled={isEdit} className="w-full" />
+          </Field>
+
+          <Field label={isEdit ? "รหัสผ่านใหม่ (เว้นว่าง = ไม่เปลี่ยน)" : "รหัสผ่าน"} required={!isEdit}>
+            <InputText type="password" value={form.password} onChange={e => f("password", e.target.value)} placeholder="••••••••" className="w-full" />
+          </Field>
+
+          {isEdit && (
+            <Field label="สถานะ">
+              <Dropdown value={form.status} options={Enum.isActive} onChange={e => f("status", e.value)} className="w-full" />
+            </Field>
+          )}
+
+          <div className="flex gap-3 pt-2">
+            <Button label="ยกเลิก" className="btn-cancel flex-1" icon="pi pi-times" onClick={() => history.push("/user")} />
+            <Button label={isEdit ? "บันทึกการแก้ไข" : "เพิ่มผู้ใช้งาน"} className="btn-primary flex-1" icon="pi pi-check" loading={saving} onClick={save} />
+          </div>
+        </motion.div>
+      )}
     </div>
   )
 }

@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import Swal from "sweetalert2";
-import jwt_decode from "jwt-decode";
 import { AuthProvider } from "../../role-access/authContext";
 import Authoring from "./Authoring";
 import { UserModel } from "../../models";
@@ -12,7 +11,6 @@ class Auth extends Component {
   state = {
     authcertifying: true,
     authenticated: false,
-    permissions: [],
     user: {},
   };
 
@@ -26,7 +24,7 @@ class Auth extends Component {
       this.setState({ authcertifying: false }, () => {
         Swal.fire({
           title: "ไม่สามารถล็อคอินได้ !",
-          text: "คำขอเกิดข้อผิดพลาด",
+          text: res_login.err || "คำขอเกิดข้อผิดพลาด",
           icon: "error",
         });
       });
@@ -44,12 +42,10 @@ class Auth extends Component {
         localStorage.setItem("session-user", JSON.stringify(res_login.data[0]));
         localStorage.setItem("p", password)
         token["x-access-token"] = res_login.x_access_token;
-        const { permissions } = jwt_decode(res_login.permissions_token);
 
         this.setState({
           authcertifying: false,
           authenticated: true,
-          permissions: permissions || [],
           user: res_login.data[0],
         });
       } catch (e) {

@@ -14,8 +14,8 @@ function Header({ handleSidebarToggle }) {
 
   return (
     <header
-      className="fixed top-0 right-0 z-[8] flex items-center justify-between px-4 md:px-6 bg-white border-b"
-      style={{ left: "var(--sidebar-w)", height: "var(--header-h)", borderColor: "var(--border)" }}>
+      className="app-header fixed top-0 right-0 z-[8] flex items-center justify-between px-4 md:px-6 bg-white border-b"
+      style={{ height: "var(--header-h)", borderColor: "var(--border)" }}>
 
       {/* Hamburger — mobile */}
       <button className="xl:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors"
@@ -37,7 +37,7 @@ function Header({ handleSidebarToggle }) {
           <div className="h-8 w-px bg-slate-200" />
           <div>
             <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest leading-none mb-0.5">เวลา</div>
-            <div className="text-base font-mono font-bold text-blue-600">{timeStr}</div>
+            <div className="text-base font-mono font-bold text-orange-600">{timeStr}</div>
           </div>
         </div>
 
@@ -47,12 +47,12 @@ function Header({ handleSidebarToggle }) {
         <AuthConsumer>
           {({ user }) => (
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-xs font-bold select-none">
-                {user?.firstname?.[0] || "A"}
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white text-xs font-bold select-none">
+                {user?.full_name?.[0] || "A"}
               </div>
               <div className="hidden md:block">
-                <div className="text-xs font-semibold text-slate-700 leading-none">{user?.firstname} {user?.lastname}</div>
-                <div className="text-[10px] text-slate-400 mt-0.5">{user?.role_name}</div>
+                <div className="text-xs font-semibold text-slate-700 leading-none">{user?.full_name}</div>
+                <div className="text-[10px] text-slate-400 mt-0.5">@{user?.username}</div>
               </div>
             </div>
           )}
