@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { useHistory } from "react-router-dom"
 import { ReportModel } from "../../models"
-import { EmptyState } from "../../components/customComponent"
+import { EmptyState, WeatherCard } from "../../components/customComponent"
 
 const model = new ReportModel()
 const fmt = (v) => `฿${(Number(v) || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}`
@@ -51,11 +51,14 @@ export default function Dashboard({ SESSION }) {
         <p className="text-sm mt-0.5 text-slate-500">ภาพรวมร้านวันนี้ — {new Date().toLocaleDateString("th-TH", { day: "numeric", month: "long", year: "numeric" })}</p>
       </motion.div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard icon="pi pi-shopping-cart" label="ยอดขายวันนี้" value={loading ? "..." : fmt(s.total_sale)} sub="สุทธิหลังส่วนลด" color="#ea580c" delay={0.05} onClick={() => history.push("/sale")} />
-        <StatCard icon="pi pi-box"           label="ต้นทุนวัตถุดิบ" value={loading ? "..." : fmt(s.total_cogs)} sub="จากยอดขายวันนี้" color="#a8a29e" delay={0.10} />
-        <StatCard icon="pi pi-chart-line"    label="กำไรขั้นต้น"   value={loading ? "..." : fmt(s.gross_profit)} sub="ยอดขาย − ต้นทุน" color="#16a34a" delay={0.15} onClick={() => history.push("/report")} />
-        <StatCard icon="pi pi-wallet"        label="กำไรสุทธิ"     value={loading ? "..." : fmt(s.net_profit)}   sub="หลังหักค่าใช้จ่าย" color={(s.net_profit ?? 0) >= 0 ? "#16a34a" : "#dc2626"} delay={0.20} onClick={() => history.push("/report")} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+        <div className="lg:col-span-2 grid grid-cols-2 gap-4">
+          <StatCard icon="pi pi-shopping-cart" label="ยอดขายวันนี้" value={loading ? "..." : fmt(s.total_sale)} sub="สุทธิหลังส่วนลด" color="#ea580c" delay={0.05} onClick={() => history.push("/sale")} />
+          <StatCard icon="pi pi-box"           label="ต้นทุนวัตถุดิบ" value={loading ? "..." : fmt(s.total_cogs)} sub="จากยอดขายวันนี้" color="#a8a29e" delay={0.10} />
+          <StatCard icon="pi pi-chart-line"    label="กำไรขั้นต้น"   value={loading ? "..." : fmt(s.gross_profit)} sub="ยอดขาย − ต้นทุน" color="#16a34a" delay={0.15} onClick={() => history.push("/report")} />
+          <StatCard icon="pi pi-wallet"        label="กำไรสุทธิ"     value={loading ? "..." : fmt(s.net_profit)}   sub="หลังหักค่าใช้จ่าย" color={(s.net_profit ?? 0) >= 0 ? "#16a34a" : "#dc2626"} delay={0.20} onClick={() => history.push("/report")} />
+        </div>
+        <WeatherCard />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">

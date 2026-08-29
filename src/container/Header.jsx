@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react"
 import { AuthConsumer } from "../role-access/authContext"
+import { toggleTheme } from "../theme"
 
 function Header({ handleSidebarToggle }) {
   const [time, setTime] = useState(new Date())
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"))
 
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000)
     return () => clearInterval(t)
   }, [])
+
+  const onToggleTheme = () => setIsDark(toggleTheme() === "dark")
 
   const dateStr = time.toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" })
   const timeStr = time.toLocaleTimeString("th-TH", { hour12: false })
@@ -40,6 +44,11 @@ function Header({ handleSidebarToggle }) {
             <div className="text-base font-mono font-bold text-orange-600">{timeStr}</div>
           </div>
         </div>
+
+        {/* Theme toggle */}
+        <button className="theme-toggle" onClick={onToggleTheme} title={isDark ? "โหมดสว่าง" : "โหมดมืด"}>
+          <i className={`pi ${isDark ? "pi-sun" : "pi-moon"} text-sm`} />
+        </button>
 
         <div className="h-8 w-px bg-slate-200 hidden sm:block" />
 

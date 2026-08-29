@@ -1,6 +1,6 @@
 import React, { Suspense } from "react"
 import { Route, Switch, useLocation } from "react-router-dom"
-import { AnimatePresence, motion } from "framer-motion"
+import { motion } from "framer-motion"
 import routes from "../routes"
 
 const PageLoader = () => (
@@ -11,12 +11,12 @@ const PageLoader = () => (
   </div>
 )
 
-const PageWrapper = ({ children }) => (
+const PageWrapper = ({ pathKey, children }) => (
   <motion.div
+    key={pathKey}
     className="page-enter"
     initial={{ opacity: 0, y: 14 }}
     animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -8 }}
     transition={{ duration: 0.28, ease: "easeOut" }}>
     {children}
   </motion.div>
@@ -27,21 +27,19 @@ const Content = ({ USER, handleLogout }) => {
 
   return (
     <Suspense fallback={<PageLoader />}>
-      <AnimatePresence mode="wait">
-        <Switch location={location} key={location.pathname}>
-          {routes.map((route) =>
-            route.component ? (
-              <Route key={route.path} path={route.path} exact={route.exact}
-                render={(props) => (
-                  <PageWrapper>
-                    <route.component {...props} SESSION={{ USER, handleLogout }} />
-                  </PageWrapper>
-                )}
-              />
-            ) : null
-          )}
-        </Switch>
-      </AnimatePresence>
+      <Switch location={location}>
+        {routes.map((route) =>
+          route.component ? (
+            <Route key={route.path} path={route.path} exact={route.exact}
+              render={(props) => (
+                <PageWrapper pathKey={location.pathname}>
+                  <route.component {...props} SESSION={{ USER, handleLogout }} />
+                </PageWrapper>
+              )}
+            />
+          ) : null
+        )}
+      </Switch>
     </Suspense>
   )
 }
